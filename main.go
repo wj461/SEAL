@@ -32,6 +32,7 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
+			application.NewService(&PetService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -53,8 +54,15 @@ func main() {
 			Backdrop:                application.MacBackdropTranslucent,
 			TitleBar:                application.MacTitleBarHiddenInset,
 		},
-		BackgroundColour: application.NewRGB(27, 38, 54),
-		URL:              "/",
+		URL:            "/Pet",
+		Frameless:      true,
+		Width:          1024,
+		Height:         768,
+		DisableResize:  true,
+		BackgroundType: application.BackgroundTypeTransparent,
+		Windows: application.WindowsWindow{
+			DisableFramelessWindowDecorations: true,
+		},
 	})
 
 	// Create a goroutine that emits an event containing the current time every second.

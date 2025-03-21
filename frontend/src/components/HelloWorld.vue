@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import {GreetService} from "../../bindings/changeme";
-import {Events} from "@wailsio/runtime";
+import {Events, Window} from "@wailsio/runtime";
 
 defineProps<{ msg: string }>()
 
@@ -19,6 +19,11 @@ const doGreet = () => {
   }).catch((err: Error) => {
     console.log(err);
   });
+
+  Window.Position().then((currentPosition) => {
+    Window.SetPosition(currentPosition.x + 100, 0);
+  });
+
 }
 
 onMounted(() => {
