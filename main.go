@@ -60,9 +60,9 @@ func main() {
 		Height:         768,
 		DisableResize:  true,
 		BackgroundType: application.BackgroundTypeTransparent,
-		Windows: application.WindowsWindow{
-			DisableFramelessWindowDecorations: true,
-		},
+		// Windows: application.WindowsWindow{
+		// 	DisableFramelessWindowDecorations: true,
+		// },
 	})
 
 	// Create a goroutine that emits an event containing the current time every second.
