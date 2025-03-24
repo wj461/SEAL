@@ -1,4 +1,31 @@
 <script setup lang="ts">
+import { provide } from 'vue';
+const img_path = new Map<string, string[]>();
+
+// Initialize the window size based on the image size and set the default image
+(function () { 
+    const images = import.meta.glob("/src/image/pet/**/*.png", { eager: true });
+    const sortedPaths = Object.keys(images).sort((a, b) =>
+        a.localeCompare(b, undefined, { numeric: true })
+        );
+
+    sortedPaths.forEach((key) => {
+        // / key = src/image/pet/move/1.png
+        const path = key.split('/');
+        const animation_name = path[path.length - 2];
+
+        if (img_path.has(animation_name)) {
+            img_path.get(animation_name)?.push(key);
+        } else {
+            img_path.set(animation_name, [key]);
+        }
+    })
+  }
+ )();
+ provide('img_path', img_path);
+
+// provide('im', sharedData);
+
 </script>
 
 <template>
