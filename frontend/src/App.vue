@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { provide } from 'vue';
-const img_path = new Map<string, string[]>();
 var animationRecord: Record<string, string[]> = {};
-
 
 // Initialize the window size based on the image size and set the default image
 (function () { 
@@ -11,7 +9,6 @@ var animationRecord: Record<string, string[]> = {};
         a.localeCompare(b, undefined, { numeric: true })
         );
 
-    // do the same thing but use Record<string, string[]> instead of Map<string, string[]>
     sortedPaths.forEach((key) => {
         // / key = src/image/pet/move/1.png
         const path = key.split('/');
@@ -39,10 +36,7 @@ var animationRecord: Record<string, string[]> = {};
  )();
 
 //  const animations: Record<string, string[]> = Object.fromEntries(animationsMap);
- provide('img_path', animationRecord);
-
-// provide('im', sharedData);
-
+ provide('animations', animationRecord);
 </script>
 
 <template>

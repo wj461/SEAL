@@ -4,7 +4,6 @@ import { PetService } from '../../bindings/changeme';
 import { ref, onMounted, onUnmounted, inject } from "vue";
 
 const animations = inject('animations') as Record<string, string[]>;
-const current_display_path = ref('');
 
 // 當前狀態與動畫
 const state = ref<keyof typeof animations>("idle");
@@ -70,10 +69,35 @@ function ResizeWindowByImage(image_path: string) {
 </script>
 
 <template>
-        <img :src="current_display_path"  class="Pet" alt="Pet logo"/>
-
+        <img :src="currentFrame" alt="動畫">
+    
+        <div class="controls">
+          <button @click="changeState('idle')">idle</button>
+          <button @click="changeState('move')">move</button>
+          <button @click="toggleAnimation">{{ isPlaying ? "暫停" : "播放" }}</button>
+        </div>
 </template>
 
 <style scoped>
-</style>
+.animation-container {
+  text-align: center;
+}
 
+.controls {
+  margin-top: 10px;
+}
+
+button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+</style>
