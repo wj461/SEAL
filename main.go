@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wj461/SEAL/Pet"
 )
 
 // Wails uses Go's `embed` package to embed the frontend files into the binary.
@@ -32,7 +33,7 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
-			application.NewService(&PetService{}),
+			application.NewService(Pet.NewPetService()),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -60,10 +61,28 @@ func main() {
 		Height:         768,
 		DisableResize:  true,
 		BackgroundType: application.BackgroundTypeTransparent,
+		// AlwaysOnTop:    true,
 		// Windows: application.WindowsWindow{
 		// 	DisableFramelessWindowDecorations: true,
 		// },
 	})
+	// app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+	// 	Title: "Window 2",
+	// 	Mac: application.MacWindow{
+	// 		InvisibleTitleBarHeight: 50,
+	// 		Backdrop:                application.MacBackdropTranslucent,
+	// 		TitleBar:                application.MacTitleBarHiddenInset,
+	// 	},
+	// 	URL:            "/Pet",
+	// 	Frameless:      true,
+	// 	Width:          1024,
+	// 	Height:         768,
+	// 	DisableResize:  true,
+	// 	BackgroundType: application.BackgroundTypeTransparent,
+	// 	Windows: application.WindowsWindow{
+	// 		DisableFramelessWindowDecorations: true,
+	// 	},
+	// })
 
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.

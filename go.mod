@@ -1,4 +1,4 @@
-module changeme
+module github.com/wj461/SEAL
 
 go 1.22.4
 

@@ -2,7 +2,7 @@
 import { provide } from 'vue';
 var animationRecord: Record<string, string[]> = {};
 
-// Initialize the window size based on the image size and set the default image
+// 這裡使用 import.meta.glob 來動態導入圖片 and store in animationRecord
 (function () { 
     const images = import.meta.glob("/src/image/pet/**/*.png", { eager: true });
     const sortedPaths = Object.keys(images).sort((a, b) =>
@@ -20,22 +20,9 @@ var animationRecord: Record<string, string[]> = {};
             animationRecord[animation_name] = [key];
         }
     })
-
-    // sortedPaths.forEach((key) => {
-    //     // / key = src/image/pet/move/1.png
-    //     const path = key.split('/');
-    //     const animation_name = path[path.length - 2];
-
-    //     if (img_path.has(animation_name)) {
-    //         img_path.get(animation_name)?.push(key);
-    //     } else {
-    //         img_path.set(animation_name, [key]);
-    //     }
-    // })
   }
  )();
 
-//  const animations: Record<string, string[]> = Object.fromEntries(animationsMap);
  provide('animations', animationRecord);
 </script>
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Events, Window } from '@wailsio/runtime';
-import { PetService } from '../../bindings/changeme';
+import { PetService } from '../../bindings/github.com/wj461/SEAL/Pet';
 import { ref, onMounted, onUnmounted, inject } from "vue";
 
 const animations = inject('animations') as Record<string, string[]>;
 
 // 當前狀態與動畫
-const state = ref<keyof typeof animations>("idle");
-const currentFrame = ref<string>(animations[state.value][0]);
+let state = ref<string>();
+let currentFrame = ref<string>();
 
 // 控制動畫播放
 const isPlaying = ref<boolean>(true);
@@ -19,7 +19,7 @@ let lastTime = 0;
 
 // 切換動畫幀
 const animate = (time: number) => {
-  if (!isPlaying.value) return;
+  if (!isPlaying.value || !state.value) return;
   
   if (time - lastTime > frameInterval) {
     lastTime = time;
@@ -27,14 +27,20 @@ const animate = (time: number) => {
     frameIndex = (frameIndex + 1) % frames.length;
     currentFrame.value = frames[frameIndex];
   }
+  PetService.Update();
   animationId = requestAnimationFrame(animate);
 };
 
 // 切換狀態
 const changeState = (newState: keyof typeof animations) => {
-  state.value = newState;
-  frameIndex = 0; // 重置幀索引
-  currentFrame.value = animations[newState][0]; // 顯示第一幀
+  PetService.SetAction(newState);
+  PetService.GetState().then((m) => {
+    state.value = m as keyof typeof animations;
+
+    frameIndex = 0; // 重置幀索引
+    currentFrame.value = animations[newState][0]; // 顯示第一幀
+    ResizeWindowByImage (currentFrame.value);
+  });
 };
 
 // 控制播放/暫停動畫
@@ -50,13 +56,31 @@ const toggleAnimation = () => {
 // 組件掛載時啟動動畫
 onMounted(() => {
   isPlaying.value = true;
-  animationId = requestAnimationFrame(animate);
+
+  PetService.GetState().then((m) => {
+    state.value = m as keyof typeof animations;
+    currentFrame.value = animations[state.value][0];
+
+    changeState("idle");
+    animationId = requestAnimationFrame(animate);
+    window.addEventListener('keydown', handleKeyDown)
+  });
 });
 
 // 組件卸載時清除動畫
 onUnmounted(() => {
   if (animationId) cancelAnimationFrame(animationId);
+  window.removeEventListener('keydown', handleKeyDown);
 });
+
+// Listen keyboard events
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === "ArrowUp") {
+    changeState("walk");
+  } else if (event.key === "ArrowDown") {
+    changeState("idle");
+  }
+}
 
 function ResizeWindowByImage(image_path: string) {
     const img = new Image();
@@ -69,13 +93,7 @@ function ResizeWindowByImage(image_path: string) {
 </script>
 
 <template>
-        <img :src="currentFrame" alt="動畫">
-    
-        <div class="controls">
-          <button @click="changeState('idle')">idle</button>
-          <button @click="changeState('move')">move</button>
-          <button @click="toggleAnimation">{{ isPlaying ? "暫停" : "播放" }}</button>
-        </div>
+        <img :src="currentFrame" alt="Pet image">
 </template>
 
 <style scoped>
