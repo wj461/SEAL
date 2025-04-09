@@ -6,6 +6,7 @@ import { ref, onMounted, onUnmounted, inject } from "vue";
 const animations = inject('animations') as Record<string, string[]>;
 
 // 當前狀態與動畫
+let id = 0;
 let state = ref<string>();
 let currentFrame = ref<string>();
 
@@ -33,13 +34,14 @@ const animate = (time: number) => {
 
 // 切換狀態
 const changeState = (newState: keyof typeof animations) => {
-  PetService.SetAction(newState);
-  PetService.GetState().then((m) => {
-    state.value = m as keyof typeof animations;
+  PetService.SetAction(id, newState).then(() => {
+    PetService.GetState(id).then((m) => {
+      state.value = m as keyof typeof animations;
 
-    frameIndex = 0; // 重置幀索引
-    currentFrame.value = animations[newState][0]; // 顯示第一幀
-    ResizeWindowByImage (currentFrame.value);
+      frameIndex = 0; // 重置幀索引
+      currentFrame.value = animations[newState][0]; // 顯示第一幀
+      ResizeWindowByImage (currentFrame.value);
+    });
   });
 };
 
@@ -57,13 +59,16 @@ const toggleAnimation = () => {
 onMounted(() => {
   isPlaying.value = true;
 
-  PetService.GetState().then((m) => {
-    state.value = m as keyof typeof animations;
-    currentFrame.value = animations[state.value][0];
+  PetService.NewPetForFrontend().then((genId) => {
+    PetService.GetState(genId).then((m) => {
+      id = genId;
+      state.value = m as keyof typeof animations;
+      currentFrame.value = animations[state.value][0];
 
-    changeState("idle");
-    animationId = requestAnimationFrame(animate);
-    window.addEventListener('keydown', handleKeyDown)
+      changeState("idle");
+      animationId = requestAnimationFrame(animate);
+      window.addEventListener('keydown', handleKeyDown)
+    });
   });
 });
 

@@ -1,5 +1,5 @@
 package Pet
 
 type IPetAction interface {
-	Update() error
+	Update(windowName string) error
 }

@@ -9,22 +9,46 @@ import {Call as $Call, Create as $Create} from "@wailsio/runtime";
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
-export function GetScreenBounds(): Promise<$models.Bound> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1946154527) as any;
+export function AddPet(id: number, windowName: string): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(261248238, id, windowName) as any;
+    return $resultPromise;
+}
+
+export function GeneratePetId(): Promise<number> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(2790826903) as any;
+    return $resultPromise;
+}
+
+export function GetPetById(id: number): Promise<$models.Pet | null> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(2651671231, id) as any;
     let $typingPromise = $resultPromise.then(($result: any) => {
-        return $$createType0($result);
+        return $$createType1($result);
     }) as any;
     $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
     return $typingPromise;
 }
 
-export function GetState(): Promise<string> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3830232807) as any;
+export function GetScreenBounds(): Promise<$models.Bound> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(1946154527) as any;
+    let $typingPromise = $resultPromise.then(($result: any) => {
+        return $$createType2($result);
+    }) as any;
+    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
+    return $typingPromise;
+}
+
+export function GetState(id: number): Promise<string> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(3830232807, id) as any;
     return $resultPromise;
 }
 
-export function SetAction(action: string): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2791060436, action) as any;
+export function NewPetForFrontend(): Promise<number> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(1745189152) as any;
+    return $resultPromise;
+}
+
+export function SetAction(id: number, action: string): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(2791060436, id, action) as any;
     return $resultPromise;
 }
 
@@ -34,4 +58,6 @@ export function Update(): Promise<void> & { cancel(): void } {
 }
 
 // Private type creation functions
-const $$createType0 = $models.Bound.createFrom;
+const $$createType0 = $models.Pet.createFrom;
+const $$createType1 = $Create.Nullable($$createType0);
+const $$createType2 = $models.Bound.createFrom;

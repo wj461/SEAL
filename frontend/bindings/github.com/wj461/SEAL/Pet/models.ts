@@ -37,3 +37,20 @@ export class Bound {
         return new Bound($$parsedSource as Partial<Bound>);
     }
 }
+
+export class Pet {
+
+    /** Creates a new Pet instance. */
+    constructor($$source: Partial<Pet> = {}) {
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new Pet instance from a string or object.
+     */
+    static createFrom($$source: any = {}): Pet {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new Pet($$parsedSource as Partial<Pet>);
+    }
+}

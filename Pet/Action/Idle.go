@@ -7,6 +7,6 @@ func NewIdle() *Idle {
 	return &Idle{}
 }
 
-func (i *Idle) Update() error {
+func (i *Idle) Update(windowName string) error {
 	return nil
 }

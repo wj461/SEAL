@@ -17,13 +17,13 @@ func NewWalk() *Walk {
 	return &Walk{10, 0, 1000 / 10, 0}
 }
 
-func (w *Walk) Update() error {
+func (w *Walk) Update(windowName string) error {
 	if int(time.Now().UnixMilli())-w.prevTime < w.frameInterval {
 		return nil
 	}
 
 	w.prevTime = int(time.Now().UnixMilli())
-	x, y := application.Get().CurrentWindow().Position()
-	application.Get().CurrentWindow().SetPosition(x-w.moveX, y+w.moveY)
+	x, y := application.Get().GetWindowByName(windowName).Position()
+	application.Get().GetWindowByName(windowName).SetPosition(x-w.moveX, y+w.moveY)
 	return nil
 }
