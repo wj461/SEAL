@@ -16,23 +16,23 @@ type Bound struct {
 }
 
 type PetService struct {
-	actionMap map[string]IPetAction
-	bounds    Bound
-	petList   []Pet
+	actionFactory map[string]func() Action.IPetAction
+	bounds        Bound
+	petList       []Pet
 }
 
 func NewPetService() *PetService {
 	p := &PetService{}
-	p.actionMap = make(map[string]IPetAction)
+	p.actionFactory = map[string]func() Action.IPetAction{}
 	p.petList = make([]Pet, 0)
-	// p.bounds = p.GetScreenBounds()
 
-	p.actionMap["walk"] = Action.NewWalk()
-	p.actionMap["idle"] = Action.NewIdle()
+	p.actionFactory["walk"] = Action.NewWalk
+	p.actionFactory["idle"] = Action.NewIdle
 	return p
 }
 
 func (p *PetService) NewPetForFrontend() int {
+	p.bounds = p.GetScreenBounds()
 	windowName := application.Get().CurrentWindow().Name()
 	id := p.GeneratePetId()
 	p.AddPet(id, windowName)
@@ -72,7 +72,7 @@ func (p *PetService) SetAction(id int, action string) {
 	if pet == nil {
 		return
 	}
-	pet.SetAction(action, p.actionMap[action])
+	pet.SetAction(action, p.actionFactory[action]())
 }
 
 func (p *PetService) GetState(id int) string {
@@ -86,7 +86,7 @@ func (p *PetService) GetState(id int) string {
 func (p *PetService) Update() error {
 	for _, pet := range p.petList {
 		if pet.currentAction != nil {
-			println("pet id:", pet.GetId(), "action:", pet.status)
+			log.Println("pet id:", pet.GetId(), "action:", pet.status)
 			err := pet.currentAction.Update(pet.windowName)
 			if err != nil {
 				log.Println("Error updating action:", err)
@@ -100,6 +100,10 @@ func (p *PetService) Update() error {
 
 func (p *PetService) GetScreenBounds() Bound {
 	screenBounds, _ := application.Get().CurrentWindow().GetScreen()
+	if screenBounds == nil {
+		log.Println("GetScreenBounds: screenBounds is nil")
+		return Bound{0, 0, 0, 0}
+	}
 	s := screenBounds.WorkArea
 	return Bound{s.X, s.Y, s.Width, s.Height}
 }

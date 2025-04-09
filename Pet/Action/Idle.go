@@ -3,7 +3,7 @@ package Action
 type Idle struct {
 }
 
-func NewIdle() *Idle {
+func NewIdle() IPetAction {
 	return &Idle{}
 }
 

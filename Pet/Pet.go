@@ -6,14 +6,14 @@ type Pet struct {
 	id            int
 	windowName    string
 	status        string
-	currentAction IPetAction
+	currentAction Action.IPetAction
 }
 
 func NewPet(id int, windowName string) *Pet {
 	return &Pet{id: id, windowName: windowName, status: "idle", currentAction: Action.NewIdle()}
 }
 
-func (p *Pet) SetAction(status string, action IPetAction) {
+func (p *Pet) SetAction(status string, action Action.IPetAction) {
 	p.status = status
 	p.currentAction = action
 	println("SetAction", p.status)

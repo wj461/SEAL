@@ -13,7 +13,7 @@ type Walk struct {
 	prevTime      int
 }
 
-func NewWalk() *Walk {
+func NewWalk() IPetAction {
 	return &Walk{10, 0, 1000 / 10, 0}
 }
 
