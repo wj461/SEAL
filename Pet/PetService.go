@@ -31,6 +31,7 @@ func NewPetService() *PetService {
 	p.actionFactory["left_ground_walk"] = Action.NewLeftMove
 	p.actionFactory["right_ground_walk"] = Action.NewRightMove
 	p.actionFactory["failing"] = Action.NewFailMove
+	p.actionFactory["left_walk"] = Action.NewUpMove
 	return p
 }
 

@@ -11,11 +11,13 @@ let bound = {X: 0, Y: 0, Width: 0, Height: 0};
 let state = ref<string>();
 let currentFrame = ref<string>();
 let isGround = ref<boolean>(true);
+let imageHight = 0;
+let imageWidth = 0;
 
 async function getIsGround() {
   const {x:x ,y:y}  = await Window.Position();
   // FIX ME
-  return y+600 >= bound.Height
+  return y >= bound.Height-imageHight;
 }
 
 // 控制動畫播放
@@ -51,6 +53,7 @@ const changeState = (newState: keyof typeof animations) => {
 
       frameIndex = 0; // 重置幀索引
       currentFrame.value = animations[state.value][0]; // 顯示第一幀
+
       ResizeWindowByImage (currentFrame.value);
     });
   });
@@ -89,7 +92,7 @@ onMounted(() => {
     const resolvedNewVal = newVal;
     if (resolvedNewVal != oldVal && resolvedNewVal) {
       changeState("right_ground_walk");
-      Window.SetPosition(x,bound.Height-600);
+      Window.SetPosition(x,bound.Height-imageHight);
     } else {
       changeState("failing");
     }
@@ -111,9 +114,8 @@ function handleKeyDown(event: KeyboardEvent) {
     changeState("right_ground_walk");
   } else if (event.key === "ArrowDown") {
     changeState("failing");
-    isGround;
-  // } else if (event.key === "ArrowLeft"){
-  //   changeState("left_walk");
+  } else if (event.key === "ArrowUp"){
+    changeState("left_walk");
   }
 }
 
@@ -121,7 +123,9 @@ function ResizeWindowByImage(image_path: string) {
     const img = new Image();
     img.src = image_path;
     img.onload = function() {
-        Window.SetSize(img.width, img.height);
+      imageHight = img.height;
+      imageWidth = img.width;
+      Window.SetSize(img.width, img.height);
     }
 }
 
@@ -133,14 +137,15 @@ async function RunAroundInScreen() {
   // console.log("x: " + x + " y: " + y);
   // console.log("width: " + bound.Width + " height: " + bound.Height);
   isGround.value = await getIsGround();
+  console.log("imageHight: " + imageHight + " imageWidth: " + imageWidth);
 
   if (bound.X > x) {
     console.log("x < 0");
     changeState("right_ground_walk");
     Window.SetPosition(bound.X,y);
-  } else if (bound.Width-200 < x) {
+  } else if (bound.Width-imageWidth < x) {
     changeState("left_ground_walk");
-    Window.SetPosition(bound.Width-200, y);
+    Window.SetPosition(bound.Width-imageWidth, y);
   }
 
   //  else if (bound.Y > y) {
