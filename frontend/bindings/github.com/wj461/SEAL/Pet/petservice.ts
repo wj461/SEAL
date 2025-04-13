@@ -42,9 +42,14 @@ export function GetState(id: number): Promise<string> & { cancel(): void } {
     return $resultPromise;
 }
 
-export function NewPetForFrontend(): Promise<number> & { cancel(): void } {
+export function NewPetForFrontend(): Promise<[number, $models.Bound]> & { cancel(): void } {
     let $resultPromise = $Call.ByID(1745189152) as any;
-    return $resultPromise;
+    let $typingPromise = $resultPromise.then(($result: any) => {
+        $result[1] = $$createType2($result[1]);
+        return $result;
+    }) as any;
+    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
+    return $typingPromise;
 }
 
 export function SetAction(id: number, action: string): Promise<void> & { cancel(): void } {

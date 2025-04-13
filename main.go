@@ -67,25 +67,25 @@ func main() {
 			DisableFramelessWindowDecorations: true,
 		},
 	})
-	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title: "Window 2",
-		Name:  "2",
-		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
-			Backdrop:                application.MacBackdropTranslucent,
-			TitleBar:                application.MacTitleBarHiddenInset,
-		},
-		URL:            "/Pet",
-		Frameless:      true,
-		Width:          1024,
-		Height:         768,
-		DisableResize:  true,
-		BackgroundType: application.BackgroundTypeTransparent,
-		AlwaysOnTop:    true,
-		Windows: application.WindowsWindow{
-			DisableFramelessWindowDecorations: true,
-		},
-	})
+	// app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+	// 	Title: "Window 2",
+	// 	Name:  "2",
+	// 	Mac: application.MacWindow{
+	// 		InvisibleTitleBarHeight: 50,
+	// 		Backdrop:                application.MacBackdropTranslucent,
+	// 		TitleBar:                application.MacTitleBarHiddenInset,
+	// 	},
+	// 	URL:            "/Pet",
+	// 	Frameless:      true,
+	// 	Width:          1024,
+	// 	Height:         768,
+	// 	DisableResize:  true,
+	// 	BackgroundType: application.BackgroundTypeTransparent,
+	// 	AlwaysOnTop:    true,
+	// 	Windows: application.WindowsWindow{
+	// 		DisableFramelessWindowDecorations: true,
+	// 	},
+	// })
 
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.
