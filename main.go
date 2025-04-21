@@ -48,44 +48,10 @@ func main() {
 	// 'Mac' options tailor the window when running on macOS.
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
-	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
-		Name:  "1",
-		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
-			Backdrop:                application.MacBackdropTranslucent,
-			TitleBar:                application.MacTitleBarHiddenInset,
-		},
-		URL:            "/Pet",
-		Frameless:      true,
-		Width:          1024,
-		Height:         768,
-		DisableResize:  true,
-		BackgroundType: application.BackgroundTypeTransparent,
-		AlwaysOnTop:    true,
-		Windows: application.WindowsWindow{
-			DisableFramelessWindowDecorations: true,
-		},
-	})
-	// app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-	// 	Title: "Window 2",
-	// 	Name:  "2",
-	// 	Mac: application.MacWindow{
-	// 		InvisibleTitleBarHeight: 50,
-	// 		Backdrop:                application.MacBackdropTranslucent,
-	// 		TitleBar:                application.MacTitleBarHiddenInset,
-	// 	},
-	// 	URL:            "/Pet",
-	// 	Frameless:      true,
-	// 	Width:          1024,
-	// 	Height:         768,
-	// 	DisableResize:  true,
-	// 	BackgroundType: application.BackgroundTypeTransparent,
-	// 	AlwaysOnTop:    true,
-	// 	Windows: application.WindowsWindow{
-	// 		DisableFramelessWindowDecorations: true,
-	// 	},
-	// })
+	NewWindow("1", app)
+	// NewWindow("2", app)
+	// NewWindow("3", app)
+	// NewWindow("4", app)
 
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.
@@ -104,4 +70,26 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func NewWindow(name string, app *application.App) {
+	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+		Title: name,
+		Name:  name,
+		Mac: application.MacWindow{
+			InvisibleTitleBarHeight: 50,
+			Backdrop:                application.MacBackdropTranslucent,
+			TitleBar:                application.MacTitleBarHiddenInset,
+		},
+		URL:            "/",
+		Frameless:      true,
+		Width:          1024,
+		Height:         768,
+		DisableResize:  true,
+		BackgroundType: application.BackgroundTypeTransparent,
+		AlwaysOnTop:    true,
+		Windows: application.WindowsWindow{
+			DisableFramelessWindowDecorations: true,
+		},
+	})
 }

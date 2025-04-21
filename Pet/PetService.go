@@ -27,17 +27,20 @@ func NewPetService() *PetService {
 
 	// Have different animations for different action and the action is folder name in src
 	p.actionFactory["idle"] = Action.NewIdle
+	p.actionFactory["focused_ground"] = Action.NewIdle
+	p.actionFactory["left_dragging"] = Action.NewIdle
+	p.actionFactory["right_dragging"] = Action.NewIdle
 
 	p.actionFactory["left_ground_walk"] = Action.NewLeftMove
 	p.actionFactory["right_ground_walk"] = Action.NewRightMove
-	p.actionFactory["failing"] = Action.NewFailMove
+	p.actionFactory["right_up_walk"] = Action.NewRightMove
+	p.actionFactory["failing"] = Action.NewFail
 	p.actionFactory["left_walk"] = Action.NewUpMove
 	return p
 }
 
-func (p *PetService) NewPetForFrontend() (int, Bound) {
+func (p *PetService) NewPetForFrontend(windowName string) (int, Bound) {
 	p.bounds = p.GetScreenBounds()
-	windowName := application.Get().CurrentWindow().Name()
 	id := p.GeneratePetId()
 	p.AddPet(id, windowName)
 	return id, p.bounds

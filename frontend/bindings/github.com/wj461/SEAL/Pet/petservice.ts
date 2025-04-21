@@ -42,8 +42,8 @@ export function GetState(id: number): Promise<string> & { cancel(): void } {
     return $resultPromise;
 }
 
-export function NewPetForFrontend(): Promise<[number, $models.Bound]> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1745189152) as any;
+export function NewPetForFrontend(windowName: string): Promise<[number, $models.Bound]> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(1745189152, windowName) as any;
     let $typingPromise = $resultPromise.then(($result: any) => {
         $result[1] = $$createType2($result[1]);
         return $result;

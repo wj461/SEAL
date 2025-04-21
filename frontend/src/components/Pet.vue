@@ -2,10 +2,10 @@
 import { Application, Events, Window } from '@wailsio/runtime';
 import { PetService } from '../../bindings/github.com/wj461/SEAL/Pet';
 import { ref, onMounted, onUnmounted, inject, watch, computed } from "vue";
+import { useWindowStatus } from './UseWindowStatus';
 
 const animations = inject('animations') as Record<string, string[]>;
 
-// 當前狀態與動畫
 let id = 0;
 let bound = {X: 0, Y: 0, Width: 0, Height: 0};
 let state = ref<string>();
@@ -13,10 +13,11 @@ let currentFrame = ref<string>();
 let isGround = ref<boolean>(true);
 let imageHight = 0;
 let imageWidth = 0;
+const { isFocused, isMoving, dragDirection, isDragging, unfocus } = useWindowStatus()
 
 async function getIsGround() {
+  // FIX ME 考慮靠牆跟天花板的情況
   const {x:x ,y:y}  = await Window.Position();
-  // FIX ME
   return y >= bound.Height-imageHight;
 }
 
@@ -70,10 +71,11 @@ const toggleAnimation = () => {
 };
 
 // 組件掛載時啟動動畫
-onMounted(() => {
+onMounted(async () => {
   isPlaying.value = true;
+  const windowName = await Window.Name();
 
-  PetService.NewPetForFrontend().then(([genId, b]) => {
+  PetService.NewPetForFrontend(windowName).then(([genId, b]) => {
     PetService.GetState(genId).then((m) => {
       id = genId;
       bound = b;
@@ -88,13 +90,35 @@ onMounted(() => {
 
   watch(isGround, async (newVal, oldVal) => {
     const {x:x ,y:y}  = await Window.Position();
-    console.log("isGround: " + newVal, x, y);
     const resolvedNewVal = newVal;
     if (resolvedNewVal != oldVal && resolvedNewVal) {
       changeState("right_ground_walk");
       Window.SetPosition(x,bound.Height-imageHight);
-    } else {
+    }
+  })
+  watch(isFocused, async (newVal, oldVal) => {
+    const resolvedNewVal = newVal;
+    if (resolvedNewVal != oldVal && resolvedNewVal && isGround.value) {
+      changeState("focused_ground");
+    }else if (resolvedNewVal != oldVal && !resolvedNewVal && isGround.value) {
+      changeState("left_ground_walk");
+    }
+  })
+
+  watch(dragDirection, async (newVal, oldVal) => {
+    const resolvedNewVal = newVal;
+    if (resolvedNewVal != oldVal && resolvedNewVal == "left" && !isGround.value && isFocused.value) {
+      changeState("left_dragging");
+    } else if (resolvedNewVal != oldVal && resolvedNewVal == "right" && !isGround.value && isFocused.value) {
+      changeState("right_dragging");
+    }
+  })
+
+  watch(isDragging, async (newVal, oldVal) => {
+    const resolvedNewVal = newVal;
+    if (resolvedNewVal != oldVal && !resolvedNewVal && !isGround.value) {
       changeState("failing");
+      unfocus()
     }
   })
 
@@ -108,15 +132,6 @@ onUnmounted(() => {
 
 // Listen keyboard events
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "ArrowLeft") {
-    changeState("left_ground_walk");
-  } else if (event.key === "ArrowRight") {
-    changeState("right_ground_walk");
-  } else if (event.key === "ArrowDown") {
-    changeState("failing");
-  } else if (event.key === "ArrowUp"){
-    changeState("left_walk");
-  }
 }
 
 function ResizeWindowByImage(image_path: string) {
@@ -132,35 +147,17 @@ function ResizeWindowByImage(image_path: string) {
 
 // some custom actions group
 async function RunAroundInScreen() {
-  // get the windows position use wails3 API
   const {x:x ,y:y}  = await Window.Position();
-  // console.log("x: " + x + " y: " + y);
-  // console.log("width: " + bound.Width + " height: " + bound.Height);
   isGround.value = await getIsGround();
-  console.log("imageHight: " + imageHight + " imageWidth: " + imageWidth);
+  console.log(isFocused.value);
 
   if (bound.X > x) {
-    console.log("x < 0");
     changeState("right_ground_walk");
     Window.SetPosition(bound.X,y);
   } else if (bound.Width-imageWidth < x) {
     changeState("left_ground_walk");
     Window.SetPosition(bound.Width-imageWidth, y);
   }
-
-  //  else if (bound.Y > y) {
-  //   console.log("y < 0");
-  //   changeState("up_walk");
-  //   Window.SetPosition(x,bound.Y);
-  // } else if (bound.Width-200 < x) {
-  //   changeState("right_walk");
-  //   Window.SetPosition(bound.Width-200, y);
-  // } else if (bound.Height-100 < y) {
-  //   console.log("y > height");
-  //   changeState("walk");
-  //   Window.SetPosition(x,bound.Height-100);
-  // }
-
 }
 
 

@@ -29,10 +29,6 @@ func NewDownWove() IPetAction {
 	return &Move{0, 10, 1000 / 8, 0}
 }
 
-func NewFailMove() IPetAction {
-	return &Move{0, 20, 1000 / 10, 0}
-}
-
 // func (w *Walk) SetMoveX(x int) {
 // 	w.moveX = x
 // }
@@ -50,12 +46,11 @@ func (w *Move) Update(windowName string) error {
 	if int(time.Now().UnixMilli())-w.prevTime < w.frameInterval {
 		return nil
 	}
-	// get is dragging
-	if application.Get().GetWindowByName(windowName).IsFocused() {
-		return nil
-	}
-
 	w.prevTime = int(time.Now().UnixMilli())
+	// if application.Get().GetWindowByName(windowName).IsFocused() {
+	// 	return nil
+	// }
+
 	x, y := application.Get().GetWindowByName(windowName).Position()
 	application.Get().GetWindowByName(windowName).SetPosition(x+w.moveX, y+w.moveY)
 	return nil

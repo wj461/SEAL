@@ -7,8 +7,8 @@ import HomeView from './components/Home.vue'
 import Pet from './components/Pet.vue'
 
 const routes = [
-  { path: '/', component: HomeView },
-  { path: '/Pet', component: Pet },
+  // { path: '/', component: HomeView },
+  { path: '/', component: Pet },
 ]
 
 const router = createRouter({
