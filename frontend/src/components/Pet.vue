@@ -14,6 +14,7 @@ let isGround = ref<boolean>(true);
 let imageHight = 0;
 let imageWidth = 0;
 const { isFocused, isMoving, dragDirection, isDragging, unfocus } = useWindowStatus()
+let _isDragging = ref<boolean>(false);
 
 async function getIsGround() {
   // FIX ME 考慮靠牆跟天花板的情況
@@ -107,16 +108,18 @@ onMounted(async () => {
 
   watch(dragDirection, async (newVal, oldVal) => {
     const resolvedNewVal = newVal;
-    if (resolvedNewVal != oldVal && resolvedNewVal == "left" && !isGround.value && isFocused.value) {
+    if (resolvedNewVal != oldVal && resolvedNewVal == "left" && _isDragging.value) {
       changeState("left_dragging");
-    } else if (resolvedNewVal != oldVal && resolvedNewVal == "right" && !isGround.value && isFocused.value) {
+    } else if (resolvedNewVal != oldVal && resolvedNewVal == "right" && _isDragging.value) {
       changeState("right_dragging");
+    } else if (resolvedNewVal != oldVal && resolvedNewVal == "mid" && _isDragging.value) {
+      changeState("mid_dragging");
     }
   })
 
-  watch(isDragging, async (newVal, oldVal) => {
+  watch(_isDragging, async (newVal, oldVal) => {
     const resolvedNewVal = newVal;
-    if (resolvedNewVal != oldVal && !resolvedNewVal && !isGround.value) {
+    if (resolvedNewVal != oldVal && !resolvedNewVal) {
       changeState("failing");
       unfocus()
     }
@@ -149,7 +152,8 @@ function ResizeWindowByImage(image_path: string) {
 async function RunAroundInScreen() {
   const {x:x ,y:y}  = await Window.Position();
   isGround.value = await getIsGround();
-  console.log(isFocused.value);
+  _isDragging.value = isDragging.value && !isGround.value;
+  console.log(isDragging.value)
 
   if (bound.X > x) {
     changeState("right_ground_walk");

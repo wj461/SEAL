@@ -30,6 +30,7 @@ func NewPetService() *PetService {
 	p.actionFactory["focused_ground"] = Action.NewIdle
 	p.actionFactory["left_dragging"] = Action.NewIdle
 	p.actionFactory["right_dragging"] = Action.NewIdle
+	p.actionFactory["mid_dragging"] = Action.NewIdle
 
 	p.actionFactory["left_ground_walk"] = Action.NewLeftMove
 	p.actionFactory["right_ground_walk"] = Action.NewRightMove
