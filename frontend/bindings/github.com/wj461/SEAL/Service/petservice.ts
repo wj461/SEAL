@@ -7,20 +7,24 @@ import {Call as $Call, Create as $Create} from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
+import * as Pet$0 from "../Pet/models.js";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
 export function AddPet(id: number, windowName: string): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(261248238, id, windowName) as any;
+    let $resultPromise = $Call.ByID(4040478084, id, windowName) as any;
     return $resultPromise;
 }
 
 export function GeneratePetId(): Promise<number> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2790826903) as any;
+    let $resultPromise = $Call.ByID(3774493597) as any;
     return $resultPromise;
 }
 
-export function GetPetById(id: number): Promise<$models.Pet | null> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2651671231, id) as any;
+export function GetPetById(id: number): Promise<Pet$0.PetObject | null> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(3391248973, id) as any;
     let $typingPromise = $resultPromise.then(($result: any) => {
         return $$createType1($result);
     }) as any;
@@ -29,7 +33,7 @@ export function GetPetById(id: number): Promise<$models.Pet | null> & { cancel()
 }
 
 export function GetScreenBounds(): Promise<$models.Bound> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1946154527) as any;
+    let $resultPromise = $Call.ByID(3419532485) as any;
     let $typingPromise = $resultPromise.then(($result: any) => {
         return $$createType2($result);
     }) as any;
@@ -38,12 +42,17 @@ export function GetScreenBounds(): Promise<$models.Bound> & { cancel(): void } {
 }
 
 export function GetState(id: number): Promise<string> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3830232807, id) as any;
+    let $resultPromise = $Call.ByID(1991151429, id) as any;
+    return $resultPromise;
+}
+
+export function IdForNewWindow(): Promise<string> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(4241835478) as any;
     return $resultPromise;
 }
 
 export function NewPetForFrontend(windowName: string): Promise<[number, $models.Bound]> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1745189152, windowName) as any;
+    let $resultPromise = $Call.ByID(2215444106, windowName) as any;
     let $typingPromise = $resultPromise.then(($result: any) => {
         $result[1] = $$createType2($result[1]);
         return $result;
@@ -53,16 +62,16 @@ export function NewPetForFrontend(windowName: string): Promise<[number, $models.
 }
 
 export function SetAction(id: number, action: string): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2791060436, id, action) as any;
+    let $resultPromise = $Call.ByID(3241413550, id, action) as any;
     return $resultPromise;
 }
 
 export function Update(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2452365135) as any;
+    let $resultPromise = $Call.ByID(2266629237) as any;
     return $resultPromise;
 }
 
 // Private type creation functions
-const $$createType0 = $models.Pet.createFrom;
+const $$createType0 = Pet$0.PetObject.createFrom;
 const $$createType1 = $Create.Nullable($$createType0);
 const $$createType2 = $models.Bound.createFrom;

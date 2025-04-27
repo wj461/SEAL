@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Application, Events, Window } from '@wailsio/runtime';
-import { PetService } from '../../bindings/github.com/wj461/SEAL/Pet';
+import { PetService } from '../../bindings/github.com/wj461/SEAL/Service';
 import { ref, onMounted, onUnmounted, inject, watch, computed } from "vue";
 import { useWindowStatus } from './UseWindowStatus';
 
@@ -155,10 +155,10 @@ async function RunAroundInScreen() {
   _isDragging.value = isDragging.value && !isGround.value;
   console.log(isDragging.value)
 
-  if (bound.X > x) {
+  if (bound.X > x && isGround.value) {
     changeState("right_ground_walk");
     Window.SetPosition(bound.X,y);
-  } else if (bound.Width-imageWidth < x) {
+  } else if (bound.Width-imageWidth < x && isGround.value) {
     changeState("left_ground_walk");
     Window.SetPosition(bound.Width-imageWidth, y);
   }

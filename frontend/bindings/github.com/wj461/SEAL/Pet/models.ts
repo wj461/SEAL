@@ -5,52 +5,19 @@
 // @ts-ignore: Unused imports
 import {Create as $Create} from "@wailsio/runtime";
 
-export class Bound {
-    "X": number;
-    "Y": number;
-    "Width": number;
-    "Height": number;
+export class PetObject {
 
-    /** Creates a new Bound instance. */
-    constructor($$source: Partial<Bound> = {}) {
-        if (!("X" in $$source)) {
-            this["X"] = 0;
-        }
-        if (!("Y" in $$source)) {
-            this["Y"] = 0;
-        }
-        if (!("Width" in $$source)) {
-            this["Width"] = 0;
-        }
-        if (!("Height" in $$source)) {
-            this["Height"] = 0;
-        }
+    /** Creates a new PetObject instance. */
+    constructor($$source: Partial<PetObject> = {}) {
 
         Object.assign(this, $$source);
     }
 
     /**
-     * Creates a new Bound instance from a string or object.
+     * Creates a new PetObject instance from a string or object.
      */
-    static createFrom($$source: any = {}): Bound {
+    static createFrom($$source: any = {}): PetObject {
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
-        return new Bound($$parsedSource as Partial<Bound>);
-    }
-}
-
-export class Pet {
-
-    /** Creates a new Pet instance. */
-    constructor($$source: Partial<Pet> = {}) {
-
-        Object.assign(this, $$source);
-    }
-
-    /**
-     * Creates a new Pet instance from a string or object.
-     */
-    static createFrom($$source: any = {}): Pet {
-        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
-        return new Pet($$parsedSource as Partial<Pet>);
+        return new PetObject($$parsedSource as Partial<PetObject>);
     }
 }

@@ -1,9 +1,10 @@
-package Pet
+package Service
 
 import (
 	"log"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wj461/SEAL/Pet"
 	"github.com/wj461/SEAL/Pet/Action"
 )
 
@@ -17,13 +18,19 @@ type Bound struct {
 type PetService struct {
 	actionFactory map[string]func() Action.IPetAction
 	bounds        Bound
-	petList       []Pet
+	petList       []Pet.PetObject
+	id            int
+}
+
+func (p *PetService) IdForNewWindow() string {
+	p.id++
+	return string(p.id)
 }
 
 func NewPetService() *PetService {
 	p := &PetService{}
 	p.actionFactory = map[string]func() Action.IPetAction{}
-	p.petList = make([]Pet, 0)
+	p.petList = make([]Pet.PetObject, 0)
 
 	// Have different animations for different action and the action is folder name in src
 	p.actionFactory["idle"] = Action.NewIdle
@@ -47,7 +54,7 @@ func (p *PetService) NewPetForFrontend(windowName string) (int, Bound) {
 	return id, p.bounds
 }
 
-func (p *PetService) GetPetById(id int) *Pet {
+func (p *PetService) GetPetById(id int) *Pet.PetObject {
 
 	for i, pet := range p.petList {
 		if pet.GetId() == id {
@@ -68,7 +75,7 @@ func (p *PetService) GeneratePetId() int {
 }
 
 func (p *PetService) AddPet(id int, windowName string) {
-	pet := NewPet(id, windowName)
+	pet := Pet.NewPet(id, windowName)
 	p.petList = append(p.petList, *pet)
 }
 
@@ -85,7 +92,7 @@ func (p *PetService) GetState(id int) string {
 	if pet == nil {
 		return "pet not found"
 	}
-	return pet.actionName
+	return pet.GetActionName()
 }
 
 func (p *PetService) GetScreenBounds() Bound {
@@ -100,15 +107,15 @@ func (p *PetService) GetScreenBounds() Bound {
 
 func (p *PetService) Update() error {
 	for _, pet := range p.petList {
-		if pet.currentAction != nil {
-			log.Println("pet id:", pet.GetId(), "action:", pet.actionName)
-			err := pet.currentAction.Update(pet.windowName)
+		petAction := pet.GetCurrentAction()
+		if petAction != nil {
+			log.Println("pet id:", pet.GetId(), "action:", petAction)
+			err := petAction.Update(pet.GetWindowName())
 			if err != nil {
 				log.Println("Error updating action:", err)
 				return err
 			}
 		}
 	}
-
 	return nil
 }

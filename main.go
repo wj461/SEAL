@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
-	"github.com/wj461/SEAL/Pet"
+	Service "github.com/wj461/SEAL/Service"
 )
 
 // Wails uses Go's `embed` package to embed the frontend files into the binary.
@@ -28,12 +28,16 @@ func main() {
 	// 'Assets' configures the asset server with the 'FS' variable pointing to the frontend files.
 	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
 	// 'Mac' options tailor the application when running an macOS.
+	PetService := Service.NewPetService()
+	WindowService := Service.NewWindowService(nil, PetService)
+
 	app := application.New(application.Options{
 		Name:        "SEAL",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
-			application.NewService(Pet.NewPetService()),
+			application.NewService(PetService),
+			application.NewService(WindowService), // 註冊 WindowService
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -43,15 +47,15 @@ func main() {
 		},
 	})
 
+	// 初始視窗
+	WindowService.SetApp(app)
+	WindowService.NewWindow(PetService.IdForNewWindow())
+	WindowService.RegisterGlobalShortcuts()
 	// Create a new window with the necessary options.
 	// 'Title' is the title of the window.
 	// 'Mac' options tailor the window when running on macOS.
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
-	NewWindow("1", app)
-	// NewWindow("2", app)
-	// NewWindow("3", app)
-	// NewWindow("4", app)
 
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.
@@ -70,26 +74,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func NewWindow(name string, app *application.App) {
-	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title: name,
-		Name:  name,
-		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
-			Backdrop:                application.MacBackdropTranslucent,
-			TitleBar:                application.MacTitleBarHiddenInset,
-		},
-		URL:            "/",
-		Frameless:      true,
-		Width:          1024,
-		Height:         768,
-		DisableResize:  true,
-		BackgroundType: application.BackgroundTypeTransparent,
-		AlwaysOnTop:    true,
-		Windows: application.WindowsWindow{
-			DisableFramelessWindowDecorations: true,
-		},
-	})
 }

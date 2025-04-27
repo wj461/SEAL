@@ -2,7 +2,6 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Window } from '@wailsio/runtime'
 
 export function useWindowStatus() {
-  // const isFocused = ref(document.hasFocus())
   const isFocused = ref(false)
   const isMoving = ref(false)
   const isDragging = ref(false)
@@ -13,10 +12,6 @@ export function useWindowStatus() {
   let interval: number | null = null
   const unfocus = () => {
     isFocused.value = false
-    // if (document.activeElement instanceof HTMLElement) {
-    //   document.activeElement.blur()
-    //   isDragging.value = false
-    // }
   }
   
   const onMouseDown = () => {
@@ -35,7 +30,6 @@ export function useWindowStatus() {
   }
   const onBlur = () => {
     isFocused.value = false
-    console.log('blur')
   }
 
   const checkWindowMove = async () => {
