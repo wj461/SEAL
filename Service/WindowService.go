@@ -2,6 +2,7 @@ package Service
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"golang.design/x/hotkey"
@@ -26,7 +27,7 @@ func (w *WindowService) SetApp(app *application.App) {
 }
 
 func (w *WindowService) CreateNewWindow() string {
-	id := w.petService.IdForNewWindow()
+	id := strconv.Itoa(w.petService.GeneratePetId())
 	w.NewWindow(id)
 	return id
 }

@@ -23,7 +23,6 @@ type PetService struct {
 }
 
 func (p *PetService) IdForNewWindow() string {
-	p.id++
 	return string(p.id)
 }
 
@@ -49,13 +48,11 @@ func NewPetService() *PetService {
 
 func (p *PetService) NewPetForFrontend(windowName string) (int, Bound) {
 	p.bounds = p.GetScreenBounds()
-	id := p.GeneratePetId()
-	p.AddPet(id, windowName)
-	return id, p.bounds
+	p.AddPet(p.id, windowName)
+	return p.id, p.bounds
 }
 
 func (p *PetService) GetPetById(id int) *Pet.PetObject {
-
 	for i, pet := range p.petList {
 		if pet.GetId() == id {
 			return &p.petList[i]
@@ -65,13 +62,8 @@ func (p *PetService) GetPetById(id int) *Pet.PetObject {
 }
 
 func (p *PetService) GeneratePetId() int {
-	id := 0
-	for _, pet := range p.petList {
-		if pet.GetId() > id {
-			id = pet.GetId()
-		}
-	}
-	return id + 1
+	p.id++
+	return p.id
 }
 
 func (p *PetService) AddPet(id int, windowName string) {
