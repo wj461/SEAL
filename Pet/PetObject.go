@@ -1,21 +1,23 @@
 package Pet
 
-import "github.com/wj461/SEAL/Pet/Action"
-
 type PetObject struct {
-	id            int
-	windowName    string
-	actionName    string
-	currentAction Action.IPetAction
+	id         int
+	windowName string
+	actionName string
+	// currentAction Action.IPetAction
 }
 
 func NewPet(id int, windowName string) *PetObject {
-	return &PetObject{id: id, windowName: windowName, actionName: "idle", currentAction: Action.NewIdle()}
+	// return &PetObject{id: id, windowName: windowName, actionName: "idle", currentAction: Action.NewIdle()}
+	return &PetObject{id: id, windowName: windowName, actionName: "failing"}
 }
 
-func (p *PetObject) SetAction(actionName string, action Action.IPetAction) {
+//	func (p *PetObject) SetAction(actionName string, action Action.IPetAction) {
+//		p.actionName = actionName
+//		p.currentAction = action
+//	}
+func (p *PetObject) SetAction(actionName string) {
 	p.actionName = actionName
-	p.currentAction = action
 }
 
 func (p *PetObject) GetId() int {
@@ -30,6 +32,6 @@ func (p *PetObject) GetActionName() string {
 	return p.actionName
 }
 
-func (p *PetObject) GetCurrentAction() Action.IPetAction {
-	return p.currentAction
-}
+// func (p *PetObject) GetCurrentAction() Action.IPetAction {
+// 	return p.currentAction
+// }

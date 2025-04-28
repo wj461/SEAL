@@ -66,11 +66,6 @@ export function SetAction(id: number, action: string): Promise<void> & { cancel(
     return $resultPromise;
 }
 
-export function Update(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2266629237) as any;
-    return $resultPromise;
-}
-
 // Private type creation functions
 const $$createType0 = Pet$0.PetObject.createFrom;
 const $$createType1 = $Create.Nullable($$createType0);

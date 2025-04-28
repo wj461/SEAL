@@ -3,7 +3,10 @@ import { Application, Events, Window } from '@wailsio/runtime';
 import { PetService } from '../../bindings/github.com/wj461/SEAL/Service';
 import { ref, onMounted, onUnmounted, inject, watch, computed } from "vue";
 import { useWindowStatus } from './UseWindowStatus';
+import { FrontendPetService } from '../services/PetService';
 
+
+const frontendPetService = ref<FrontendPetService | null>(null);
 const animations = inject('animations') as Record<string, string[]>;
 
 let id = 0;
@@ -42,7 +45,8 @@ const animate = (time: number) => {
     frameIndex = (frameIndex + 1) % frames.length;
     currentFrame.value = frames[frameIndex];
   }
-  PetService.Update();
+  // PetService.Update();
+  frontendPetService.value?.update();
   animationId = requestAnimationFrame(animate);
 };
 
@@ -52,6 +56,7 @@ const changeState = (newState: keyof typeof animations) => {
   PetService.SetAction(id, newState).then(() => {
     PetService.GetState(id).then((m) => {
       state.value = m as keyof typeof animations;
+      frontendPetService.value?.setAction(state.value);
 
       frameIndex = 0; // 重置幀索引
       currentFrame.value = animations[state.value][0]; // 顯示第一幀
@@ -83,7 +88,10 @@ onMounted(async () => {
       state.value = m as keyof typeof animations;
       currentFrame.value = animations[state.value][0];
 
-      changeState("idle");
+      // Init state
+      changeState("failing");
+      console.log(state.value)
+      frontendPetService.value = new FrontendPetService();
       animationId = requestAnimationFrame(animate);
       window.addEventListener('keydown', handleKeyDown)
     });
@@ -164,6 +172,37 @@ async function RunAroundInScreen() {
   }
 }
 
+
+
+// DLC 可以跟其他pet互動
+
+// import { Events } from '@wailsio/runtime';
+
+// // 發布此 pet 的事件
+// function publishMyAction(action: string) {
+//   Events.Emit(`pet:${id}:action`, action);
+// }
+
+// // 監聽所有其他 pet 的事件
+// function listenToOtherPets() {
+//   Events.On('pet:*:action', (eventName: string, action: string) => {
+//     const otherPetId = eventName.split(':')[1];
+//     if (otherPetId !== id.toString()) {
+//       console.log(`Pet ${otherPetId} is doing action: ${action}`);
+//       // 你可以據此做出反應
+//     }
+//   });
+// }
+
+// onMounted(() => {
+//   // ... 其他初始化代碼
+//   listenToOtherPets();
+// });
+
+// onUnmounted(() => {
+//   // 清理事件監聽
+//   Events.Off('pet:*:action');
+// });
 
 </script>
 

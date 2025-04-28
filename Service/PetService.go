@@ -5,7 +5,7 @@ import (
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wj461/SEAL/Pet"
-	"github.com/wj461/SEAL/Pet/Action"
+	// "github.com/wj461/SEAL/Pet/Action"
 )
 
 type Bound struct {
@@ -16,10 +16,10 @@ type Bound struct {
 }
 
 type PetService struct {
-	actionFactory map[string]func() Action.IPetAction
-	bounds        Bound
-	petList       []Pet.PetObject
-	id            int
+	// actionFactory map[string]func() Action.IPetAction
+	bounds  Bound
+	petList []Pet.PetObject
+	id      int
 }
 
 func (p *PetService) IdForNewWindow() string {
@@ -28,21 +28,21 @@ func (p *PetService) IdForNewWindow() string {
 
 func NewPetService() *PetService {
 	p := &PetService{}
-	p.actionFactory = map[string]func() Action.IPetAction{}
+	// p.actionFactory = map[string]func() Action.IPetAction{}
 	p.petList = make([]Pet.PetObject, 0)
 
 	// Have different animations for different action and the action is folder name in src
-	p.actionFactory["idle"] = Action.NewIdle
-	p.actionFactory["focused_ground"] = Action.NewIdle
-	p.actionFactory["left_dragging"] = Action.NewIdle
-	p.actionFactory["right_dragging"] = Action.NewIdle
-	p.actionFactory["mid_dragging"] = Action.NewIdle
+	// p.actionFactory["idle"] = Action.NewIdle
+	// p.actionFactory["focused_ground"] = Action.NewIdle
+	// p.actionFactory["left_dragging"] = Action.NewIdle
+	// p.actionFactory["right_dragging"] = Action.NewIdle
+	// p.actionFactory["mid_dragging"] = Action.NewIdle
 
-	p.actionFactory["left_ground_walk"] = Action.NewLeftMove
-	p.actionFactory["right_ground_walk"] = Action.NewRightMove
-	p.actionFactory["right_up_walk"] = Action.NewRightMove
-	p.actionFactory["failing"] = Action.NewFail
-	p.actionFactory["left_walk"] = Action.NewUpMove
+	// p.actionFactory["left_ground_walk"] = Action.NewLeftMove
+	// p.actionFactory["right_ground_walk"] = Action.NewRightMove
+	// p.actionFactory["right_up_walk"] = Action.NewRightMove
+	// p.actionFactory["failing"] = Action.NewFail
+	// p.actionFactory["left_walk"] = Action.NewUpMove
 	return p
 }
 
@@ -76,7 +76,8 @@ func (p *PetService) SetAction(id int, action string) {
 	if pet == nil {
 		return
 	}
-	pet.SetAction(action, p.actionFactory[action]())
+	// pet.SetAction(action, p.actionFactory[action]())
+	pet.SetAction(action)
 }
 
 func (p *PetService) GetState(id int) string {
@@ -97,17 +98,17 @@ func (p *PetService) GetScreenBounds() Bound {
 	return Bound{s.X, s.Y, s.Width, s.Height}
 }
 
-func (p *PetService) Update() error {
-	for _, pet := range p.petList {
-		petAction := pet.GetCurrentAction()
-		if petAction != nil {
-			log.Println("pet id:", pet.GetId(), "action:", petAction)
-			err := petAction.Update(pet.GetWindowName())
-			if err != nil {
-				log.Println("Error updating action:", err)
-				return err
-			}
-		}
-	}
-	return nil
-}
+// func (p *PetService) Update() error {
+// 	for _, pet := range p.petList {
+// 		petAction := pet.GetCurrentAction()
+// 		if petAction != nil {
+// 			log.Println("pet id:", pet.GetId(), "action:", petAction)
+// 			err := petAction.Update(pet.GetWindowName())
+// 			if err != nil {
+// 				log.Println("Error updating action:", err)
+// 				return err
+// 			}
+// 		}
+// 	}
+// 	return nil
+// }
