@@ -16,6 +16,7 @@ export class LeftMoveAction implements IPetAction {
   private moveY: number = 0;
   private frameInterval: number = 1000 / 8;
   private prevTime: number = 0;
+  private posCache = PositionCache.getInstance();
 
   async update(): Promise<void> {
     if (Date.now() - this.prevTime < this.frameInterval) {
@@ -23,8 +24,9 @@ export class LeftMoveAction implements IPetAction {
     }
     this.prevTime = Date.now();
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    const pos = await this.posCache.getCachePosition();
+    await this.posCache.setPosition(pos.x + this.moveX, pos.y + this.moveY);
+ 
   }
 }
 
@@ -33,6 +35,7 @@ export class RightMoveAction implements IPetAction {
   private moveY: number = 0;
   private frameInterval: number = 1000 / 8;
   private prevTime: number = 0;
+  private posCache = PositionCache.getInstance();
 
   async update(): Promise<void> {
     if (Date.now() - this.prevTime < this.frameInterval) {
@@ -40,8 +43,8 @@ export class RightMoveAction implements IPetAction {
     }
     this.prevTime = Date.now();
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    const pos = await this.posCache.getCachePosition();
+    await this.posCache.setPosition(pos.x + this.moveX, pos.y + this.moveY);
   }
 }
 
@@ -50,6 +53,7 @@ export class UpMoveAction implements IPetAction {
   private moveY: number = -10;
   private frameInterval: number = 1000 / 8;
   private prevTime: number = 0;
+  private posCache = PositionCache.getInstance();
 
   async update(): Promise<void> {
     if (Date.now() - this.prevTime < this.frameInterval) {
@@ -57,8 +61,8 @@ export class UpMoveAction implements IPetAction {
     }
     this.prevTime = Date.now();
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    const pos = await this.posCache.getCachePosition();
+    await this.posCache.setPosition(pos.x + this.moveX, pos.y + this.moveY);
   }
 }
 
@@ -71,6 +75,7 @@ export class FailAction implements IPetAction {
   private isFirst: boolean = true;
   private frameInterval: number = 1000 / 10;
   private prevTime: number = 0;
+  private posCache = PositionCache.getInstance();
 
   async update(): Promise<void> {
     if (this.isFirst) {
@@ -91,8 +96,8 @@ export class FailAction implements IPetAction {
     // 模擬 time.Sleep 的效果
     await new Promise(resolve => setTimeout(resolve, this.dt * 1000));
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + 2, Math.floor(this.y));
+    const pos = await this.posCache.getCachePosition();
+    await this.posCache.setPosition(pos.x + 2, Math.floor(this.y));
   }
 }
 
@@ -121,6 +126,7 @@ export class PetObject {
 export class FrontendPetService {
   private actionFactory: Record<string, () => IPetAction> = {};
   private pet = new PetObject();
+  private positionCache: PositionCache;
 
   constructor(action = 'failing') {
     // 註冊各種不同行為的動作
@@ -135,10 +141,9 @@ export class FrontendPetService {
     this.actionFactory['right_up_walk'] = () => new RightMoveAction();
     this.actionFactory['failing'] = () => new FailAction();
     this.actionFactory['left_walk'] = () => new UpMoveAction();
-    
 
-    console.log("action", action);
     this.pet.setAction(this.actionFactory[action]());
+    this.positionCache = PositionCache.getInstance();
   }
 
   setAction(action: string) {
@@ -158,14 +163,64 @@ export class FrontendPetService {
     return this.pet.getActionName();
   }
 
+  getCachePosition() {
+    return this.positionCache.getCachePosition();
+  }
+
+  setCurrentPosition(x: number, y: number) {
+    return this.positionCache.setPosition(x, y);
+  }
+
   async update() {
-      const action = this.pet.getCurrentAction();
-      if (action) {
-        try {
-          await action.update();
-        } catch (err) {
-          console.error("更新時發生錯誤:", err);
-        }
+    const action = this.pet.getCurrentAction();
+    if (action) {
+      try {
+        await action.update();
+      } catch (err) {
+        console.error("更新時發生錯誤:", err);
+      }
     }
+  }
+}
+
+// 共用位置緩存服務
+export class PositionCache {
+  private static instance: PositionCache;
+  private cachePosition = { x: 0, y: 0 };
+  private lastSetPosition = { x: 0, y: 0 };
+  private lastUpdateTime = 0;
+  private minUpdateInterval = 33; // ~30fps
+  
+  constructor() {
+    Window.Position().then(pos => {
+      this.cachePosition = { ...pos };
+      this.lastSetPosition = { ...pos };
+    });
+  }
+  
+  static getInstance() {
+    if (!PositionCache.instance) {
+      PositionCache.instance = new PositionCache();
+    }
+    return PositionCache.instance;
+  }
+  
+  getCachePosition() {
+    return this.cachePosition;
+  }
+  
+  async setPosition(x: number, y: number) {
+    const now = Date.now();
+    
+    // 如果位置真的變更了，且超過了最小更新間隔
+    if ((x !== this.lastSetPosition.x || y !== this.lastSetPosition.y) && 
+        now - this.lastUpdateTime >= this.minUpdateInterval) {
+      Window.SetPosition(x, y);
+      this.lastSetPosition = { x, y };
+      this.cachePosition = { x, y };
+      this.lastUpdateTime = now;
+      return true;
+    }
+    return false;
   }
 }

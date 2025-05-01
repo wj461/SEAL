@@ -8,6 +8,7 @@ import { FrontendPetService } from '../services/PetService';
 
 const frontendPetService = ref<FrontendPetService | null>(null);
 const animations = inject('animations') as Record<string, string[]>;
+const cachePosition = ref({ x: 0, y: 0 });
 
 let id = 0;
 let bound = {X: 0, Y: 0, Width: 0, Height: 0};
@@ -20,9 +21,14 @@ const { isFocused, isMoving, dragDirection, isDragging, unfocus } = useWindowSta
 let _isDragging = ref<boolean>(false);
 
 async function getIsGround() {
-  // FIX ME 考慮靠牆跟天花板的情況
-  const {x:x ,y:y}  = await Window.Position();
-  return y >= bound.Height-imageHight;
+  // 使用前端服務中的位置資訊
+  if (frontendPetService.value) {
+    const pos = frontendPetService.value.getCachePosition();
+    cachePosition.value = pos;
+    // FIX ME 考慮靠牆跟天花板的情況
+    return pos.y >= bound.Height-imageHight;
+  }
+  return true;
 }
 
 // 控制動畫播放
@@ -45,8 +51,13 @@ const animate = (time: number) => {
     frameIndex = (frameIndex + 1) % frames.length;
     currentFrame.value = frames[frameIndex];
   }
-  // PetService.Update();
-  frontendPetService.value?.update();
+  
+  // 更新位置資訊
+  if (frontendPetService.value) {
+    frontendPetService.value.update();
+    cachePosition.value = frontendPetService.value.getCachePosition();
+  }
+  
   animationId = requestAnimationFrame(animate);
 };
 
@@ -98,7 +109,7 @@ onMounted(async () => {
   });
 
   watch(isGround, async (newVal, oldVal) => {
-    const {x:x ,y:y}  = await Window.Position();
+    const {x: x ,y:y}  = await Window.Position();
     const resolvedNewVal = newVal;
     if (resolvedNewVal != oldVal && resolvedNewVal) {
       changeState("right_ground_walk");
@@ -158,21 +169,22 @@ function ResizeWindowByImage(image_path: string) {
 
 // some custom actions group
 async function RunAroundInScreen() {
-  const {x:x ,y:y}  = await Window.Position();
-  isGround.value = await getIsGround();
-  _isDragging.value = isDragging.value && !isGround.value;
-  console.log(isDragging.value)
-
-  if (bound.X > x && isGround.value) {
-    changeState("right_ground_walk");
-    Window.SetPosition(bound.X,y);
-  } else if (bound.Width-imageWidth < x && isGround.value) {
-    changeState("left_ground_walk");
-    Window.SetPosition(bound.Width-imageWidth, y);
+  if (frontendPetService.value) {
+    const pos = frontendPetService.value.getCachePosition();
+    cachePosition.value = pos;
+    
+    isGround.value = await getIsGround();
+    _isDragging.value = isDragging.value && !isGround.value;
+    
+    if (bound.X > pos.x && isGround.value) {
+      changeState("right_ground_walk");
+      Window.SetPosition(bound.X, pos.y);
+    } else if (bound.Width-imageWidth < pos.x && isGround.value) {
+      changeState("left_ground_walk");
+      Window.SetPosition(bound.Width-imageWidth, pos.y);
+    }
   }
 }
-
-
 
 // DLC 可以跟其他pet互動
 
@@ -208,6 +220,8 @@ async function RunAroundInScreen() {
 
 <template>
         <img :src="currentFrame" alt="Pet image">
+        <!-- 可選的顯示位置資訊，方便調試 -->
+        <!-- <div class="position-info">X: {{ currentPosition.x }}, Y: {{ currentPosition.y }}</div> -->
 </template>
 
 <style scoped>
@@ -231,5 +245,15 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+.position-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  padding: 2px 5px;
+  font-size: 10px;
 }
 </style>
