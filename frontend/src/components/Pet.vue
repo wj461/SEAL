@@ -16,13 +16,14 @@ let currentFrame = ref<string>();
 let isGround = ref<boolean>(true);
 let imageHight = 0;
 let imageWidth = 0;
-const { isFocused, isMoving, dragDirection, isDragging, unfocus } = useWindowStatus()
+const { isFocused, isMoving, dragDirection, isDragging, unfocus, currentX, currentY } = useWindowStatus()
 let _isDragging = ref<boolean>(false);
 
 async function getIsGround() {
   // FIX ME 考慮靠牆跟天花板的情況
-  const {x:x ,y:y}  = await Window.Position();
-  return y >= bound.Height-imageHight;
+  // const {x:x ,y:y}  = await Window.Position();
+  // return y >= bound.Height-imageHight;
+  return currentY.value >= bound.Height-imageHight;
 }
 
 // 控制動畫播放
@@ -64,7 +65,7 @@ const changeState = (newState: keyof typeof animations) => {
       ResizeWindowByImage (currentFrame.value);
     });
   });
-};
+  };
 
 // 控制播放/暫停動畫
 const toggleAnimation = () => {
@@ -98,11 +99,12 @@ onMounted(async () => {
   });
 
   watch(isGround, async (newVal, oldVal) => {
-    const {x:x ,y:y}  = await Window.Position();
+    // const {x:x ,y:y}  = await Window.Position();
     const resolvedNewVal = newVal;
     if (resolvedNewVal != oldVal && resolvedNewVal) {
       changeState("right_ground_walk");
-      Window.SetPosition(x,bound.Height-imageHight);
+      // Window.SetPosition(x,bound.Height-imageHight);
+      Window.SetPosition(currentX.value,bound.Height-imageHight);
     }
   })
   watch(isFocused, async (newVal, oldVal) => {
@@ -158,17 +160,21 @@ function ResizeWindowByImage(image_path: string) {
 
 // some custom actions group
 async function RunAroundInScreen() {
-  const {x:x ,y:y}  = await Window.Position();
+  // const {x:x ,y:y}  = await Window.Position();
   isGround.value = await getIsGround();
   _isDragging.value = isDragging.value && !isGround.value;
-  console.log(isDragging.value)
+  console.log(currentX.value, currentY.value);
 
-  if (bound.X > x && isGround.value) {
+  // if (bound.X > x && isGround.value) {
+  if (bound.X > currentX.value && isGround.value) {
     changeState("right_ground_walk");
-    Window.SetPosition(bound.X,y);
-  } else if (bound.Width-imageWidth < x && isGround.value) {
+    // Window.SetPosition(bound.X,y);
+    Window.SetPosition(bound.X,currentY.value);
+  // } else if (bound.Width-imageWidth < x && isGround.value) {
+  } else if (bound.Width-imageWidth < currentX.value && isGround.value) {
     changeState("left_ground_walk");
-    Window.SetPosition(bound.Width-imageWidth, y);
+    // Window.SetPosition(bound.Width-imageWidth, y);
+    Window.SetPosition(bound.Width-imageWidth, currentY.value);
   }
 }
 

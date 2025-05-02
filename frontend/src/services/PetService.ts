@@ -1,4 +1,6 @@
 import { Window } from '@wailsio/runtime';
+import { useWindowStatus } from '../components/UseWindowStatus';
+const { isFocused, isMoving, dragDirection, isDragging, unfocus, currentX, currentY } = useWindowStatus()
 
 export interface IPetAction {
   update(): Promise<void>;
@@ -23,8 +25,9 @@ export class LeftMoveAction implements IPetAction {
     }
     this.prevTime = Date.now();
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    // const pos = await Window.Position();
+    // await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    await Window.SetPosition(currentX.value + this.moveX, currentY.value + this.moveY);
   }
 }
 
@@ -40,8 +43,9 @@ export class RightMoveAction implements IPetAction {
     }
     this.prevTime = Date.now();
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    // const pos = await Window.Position();
+    // await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    await Window.SetPosition(currentX.value + this.moveX, currentY.value + this.moveY);
   }
 }
 
@@ -57,8 +61,9 @@ export class UpMoveAction implements IPetAction {
     }
     this.prevTime = Date.now();
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    // const pos = await Window.Position();
+    // await Window.SetPosition(pos.x + this.moveX, pos.y + this.moveY);
+    await Window.SetPosition(currentX.value + this.moveX, currentY.value + this.moveY);
   }
 }
 
@@ -75,8 +80,9 @@ export class FailAction implements IPetAction {
   async update(): Promise<void> {
     if (this.isFirst) {
       this.isFirst = false;
-      const pos = await Window.Position();
-      this.y = pos.y;
+      // const pos = await Window.Position();
+      // this.y = pos.y;
+      this.y = currentY.value;
       return;
     }
 
@@ -91,8 +97,9 @@ export class FailAction implements IPetAction {
     // 模擬 time.Sleep 的效果
     await new Promise(resolve => setTimeout(resolve, this.dt * 1000));
 
-    const pos = await Window.Position();
-    await Window.SetPosition(pos.x + 2, Math.floor(this.y));
+    // const pos = await Window.Position();
+    // await Window.SetPosition(pos.x + 2, Math.floor(this.y));
+    await Window.SetPosition(currentX.value + 2, Math.floor(this.y));
   }
 }
 
@@ -163,6 +170,7 @@ export class FrontendPetService {
       if (action) {
         try {
           await action.update();
+          console.log(currentX.value, currentY.value);
         } catch (err) {
           console.error("更新時發生錯誤:", err);
         }
